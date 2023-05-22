@@ -1,0 +1,30 @@
+.search-form {
+  width: 100%;
+  text-align: center;
+  padding-top: 24px;
+  padding-bottom: 28px;
+  height: 76px;
+  background-color: aqua;
+  margin-bottom: 20px;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.photo-card {
+  width: 250px;
+}
+
+.photo-card > img {
+  width: 100%;
+}
+
+.info {
+  display: flex;
+  gap: 20px;
+  font-size: 10px;
+}
