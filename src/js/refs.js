@@ -1,7 +1,6 @@
 export const refs = {
   searchForm: document.getElementById('search-form'),
   gallery: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-more'),
+  loadMoreBtn: document.getElementById('load-more-btn'),
 };
 
-console.log(refs.searchForm);

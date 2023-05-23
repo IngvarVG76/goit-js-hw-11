@@ -1,57 +1,17 @@
-<form class="search-form" id="search-form">
-  <input
-    type="text"
-    name="searchQuery"
-    autocomplete="off"
-    placeholder="Search images..."
-  />
-  <button type="submit">Search</button>
-</form>
-<div class="gallery">
-  <div class="photo-card">
-    <img
-      src="https://cdn.pixabay.com/photo/2023/05/15/14/20/museum-7995207_640.jpg"
-      alt=""
-      loading="lazy"
+<div class="form-wrap">
+  <form class="search-form" id="search-form">
+    <input
+      type="text"
+      name="searchQuery"
+      autocomplete="off"
+      placeholder="Search images..."
     />
-    <div class="info">
-      <p class="info-item">
-        <b>Likes</b>
-      </p>
-      <p class="info-item">
-        <b>Views</b>
-      </p>
-      <p class="info-item">
-        <b>Comments</b>
-      </p>
-      <p class="info-item">
-        <b>Downloads</b>
-      </p>
-    </div>
-  </div>
-  <div class="photo-card">
-    <img
-      src="https://cdn.pixabay.com/photo/2023/05/15/14/20/museum-7995207_640.jpg"
-      alt=""
-      loading="lazy"
-    />
-    <div class="info">
-      <p class="info-item">
-        <b>Likes</b>
-      </p>
-      <p class="info-item">
-        <b>Views</b>
-      </p>
-      <p class="info-item">
-        <b>Comments</b>
-      </p>
-      <p class="info-item">
-        <b>Downloads</b>
-      </p>
-    </div>
-
-    <!-- Картки зображень -->
-  </div>
+    <button type="submit">Search</button>
+  </form>
+  <button type="button" class="load-more" id="load-more-btn" style="display: none;">Load more</button>
 </div>
-
-<button type="button" class="load-more">Load more</button>
+  <div class="gallery">
+        <!-- Картки зображень -->
+    </div>
+  </div>
+  
