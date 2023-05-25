@@ -1,13 +1,17 @@
 import axios from 'axios';
-import Notiflix from 'notiflix';
-import { api } from './api';
-import { displayImages, clearGallery, lightboxLaunch } from './render';
-import {
-  showLoadMoreButton,
-  hideLoadMoreButton,
-  activateLoadMoreButton,
-  deactivateLoadMoreButton,
-} from './button';
+
+import { activateLoadMoreButton, deactivateLoadMoreButton } from './button';
+
+export const api = {
+  apiKey: '36587566-5f2e8f43046e4651407f546e8',
+  baseURL: 'https://pixabay.com/api/',
+  perPage: 40,
+  currentPage: 1,
+  currentQuery: '',
+  currentArrey: 1,
+  totalHits: 0,
+  totalLoaded: 0,
+};
 
 // Images query
 export async function searchImages(query) {
@@ -26,37 +30,6 @@ export async function searchImages(query) {
     });
     const data = await response.data;
     activateLoadMoreButton();
-    queryHandler(data);
-    api.currentArrey = data.hits.length;
-  } catch (error) {
-    Notiflix.Notify.failure(`Ups :( Some bad things happened ${error.message}`);
-    console.log(error);
-  }
-}
-
-// Query Handler
-function queryHandler(data) {
-  if (data.hits.length === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-    hideLoadMoreButton();
-    clearGallery();
-    api.currentPage === 1;
-    api.currentQuery === '';
-    return;
-  }
-  if (api.currentPage === 1) {
-    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-  }
-  showLoadMoreButton();
-  displayImages(data.hits);
-  api.currentPage += 1;
-  if (data.hits.length < api.perPage) {
-    hideLoadMoreButton();
-    Notiflix.Notify.warning(
-      "We're sorry, but you've reached the end of search results."
-    );
-  }
-  lightboxLaunch();
+    return data;
+  } catch (error) {}
 }
