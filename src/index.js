@@ -9,65 +9,101 @@ import { displayImages, clearGallery, lightboxLaunch } from './js/render';
 import { showLoadMoreButton, hideLoadMoreButton } from './js/button';
 
 // On submit
-function queryOnSubmit(event) {
+async function queryOnSubmit(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const searchQuery = form.elements.searchQuery.value.trim();
+
   if (searchQuery === '') {
-    Notiflix.Notify.warning('The field shold not be emty!');
+    Notiflix.Notify.warning('The field should not be empty!');
     return;
   }
-  api.currentQuery = searchQuery;
-  api.currentPage = 1;
-  api.totalLoaded = 0;
-  api.totalHits = 0;
-  clearGallery();
-  searchImages(api.currentQuery)
-    .then(data => {
-      if (data.hits.length === 0) {
-        Notiflix.Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        hideLoadMoreButton();
-        clearGallery();
-        api.currentPage === 1;
-        api.currentQuery === '';
-        return;
-      }
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-      displayImages(data.hits);
-      showLoadMoreButton();
-      lightboxLaunch();
-      api.currentPage += 1;
-      api.currentArrey = data.hits.length;
-      api.totalLoaded += data.hits.length;
-      api.totalHits = data.totalHits;
-      console.log(
-        `Total found: ${api.totalHits} Total loaded: ${api.totalLoaded}`
-      );
-      return data;
-    })
-    .then(data => {
-      if (api.currentArrey < api.perPage || api.totalLoaded >= api.totalHits) {
-        hideLoadMoreButton();
-      }
-      return data;
-    })
-    .catch(error => {
+
+  try {
+    api.currentQuery = searchQuery;
+    api.currentPage = 1;
+    api.totalLoaded = 0;
+    api.totalHits = 0;
+
+    clearGallery();
+
+    const data = await searchImages(api.currentQuery);
+
+    if (data.hits.length === 0) {
       Notiflix.Notify.failure(
-        `Ups :( Some bad things happened ${error.message}`
+        'Sorry, there are no images matching your search query. Please try again.'
       );
-      console.log(error);
-    });
+
+      hideLoadMoreButton();
+      clearGallery();
+      api.currentPage = 1;
+      api.currentQuery = '';
+      return;
+    }
+
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+    displayImages(data.hits);
+    showLoadMoreButton();
+    lightboxLaunch();
+
+    api.currentPage += 1;
+    api.currentArray = data.hits.length;
+    api.totalLoaded += data.hits.length;
+    api.totalHits = data.totalHits;
+
+    console.log(
+      `Total found: ${api.totalHits} Total loaded: ${api.totalLoaded}`
+    );
+
+    if (api.currentArray < api.perPage || api.totalLoaded >= api.totalHits) {
+      hideLoadMoreButton();
+    }
+  } catch (error) {
+    Notiflix.Notify.failure(`Ups :( Some bad things happened ${error.message}`);
+    console.log(error);
+  }
 }
 
 // Event listener for form submission
 refs.searchForm.addEventListener('submit', queryOnSubmit);
 
 // On Load More Btn
-function queryOnLoadMore(event) {
-  searchImages(api.currentQuery)
-    .then(data => {
+async function queryOnLoadMore(event) {
+  try {
+    const data = await searchImages(api.currentQuery);
+    displayImages(data.hits);
+    api.currentPage += 1;
+    api.currentArrey = data.hits.length;
+    api.totalLoaded += data.hits.length;
+    console.log(
+      `Total found: ${api.totalHits} Total loaded: ${api.totalLoaded}`
+    );
+    lightboxLaunch();
+
+    if (data.hits.length < api.perPage || api.totalLoaded >= api.totalHits) {
+      hideLoadMoreButton();
+      Notiflix.Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
+  } catch (error) {
+    Notiflix.Notify.failure(`Ups :( Some bad things happened ${error.message}`);
+    console.log(error);
+  }
+}
+
+refs.loadMoreBtn.addEventListener('click', queryOnLoadMore);
+
+// On Scroll
+async function queryOnScroll() {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+  if (api.currentArrey < api.perPage || api.totalLoaded >= api.totalHits) {
+    return;
+  } else if (scrollTop + clientHeight >= scrollHeight - 5) {
+    try {
+      const data = await searchImages(api.currentQuery);
+
       displayImages(data.hits);
       api.currentPage += 1;
       api.currentArrey = data.hits.length;
@@ -76,63 +112,19 @@ function queryOnLoadMore(event) {
         `Total found: ${api.totalHits} Total loaded: ${api.totalLoaded}`
       );
       lightboxLaunch();
-      return data;
-    })
-    .then(data => {
+
       if (data.hits.length < api.perPage || api.totalLoaded >= api.totalHits) {
         hideLoadMoreButton();
         Notiflix.Notify.warning(
           "We're sorry, but you've reached the end of search results."
         );
       }
-      return data;
-    })
-    .catch(error => {
+    } catch (error) {
       Notiflix.Notify.failure(
         `Ups :( Some bad things happened ${error.message}`
       );
       console.log(error);
-    });
-}
-
-refs.loadMoreBtn.addEventListener('click', queryOnLoadMore);
-
-// On Scroll
-function queryOnScroll() {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  if (api.currentArrey < api.perPage || api.totalLoaded >= api.totalHits) {
-    return;
-  } else if (scrollTop + clientHeight >= scrollHeight - 5) {
-    searchImages(api.currentQuery)
-      .then(data => {
-        displayImages(data.hits);
-        api.currentPage += 1;
-        api.currentArrey = data.hits.length;
-        api.totalLoaded += data.hits.length;
-        console.log(
-          `Total found: ${api.totalHits} Total loaded: ${api.totalLoaded}`
-        );
-        lightboxLaunch();
-        return data;
-      })
-      .then(data => {
-        if (
-          data.hits.length < api.perPage ||
-          api.totalLoaded >= api.totalHits
-        ) {
-          hideLoadMoreButton();
-          Notiflix.Notify.warning(
-            "We're sorry, but you've reached the end of search results."
-          );
-        }
-        return data;
-      })
-      .catch(error => {
-        Notiflix.Notify.failure(
-          `Ups :( Some bad things happened ${error.message}`
-        );
-        console.log(error);
-      });
+    }
   }
 }
 
