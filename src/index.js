@@ -19,14 +19,14 @@ async function queryOnSubmit(event) {
     return;
   }
 
+  api.currentQuery = searchQuery;
+  api.currentPage = 1;
+  api.totalLoaded = 0;
+  api.totalHits = 0;
+
+  clearGallery();
+
   try {
-    api.currentQuery = searchQuery;
-    api.currentPage = 1;
-    api.totalLoaded = 0;
-    api.totalHits = 0;
-
-    clearGallery();
-
     const data = await searchImages(api.currentQuery);
 
     if (data.hits.length === 0) {
@@ -47,7 +47,7 @@ async function queryOnSubmit(event) {
     lightboxLaunch();
 
     api.currentPage += 1;
-    api.currentArray = data.hits.length;
+    api.currentArrey = data.hits.length;
     api.totalLoaded += data.hits.length;
     api.totalHits = data.totalHits;
 
@@ -71,7 +71,9 @@ refs.searchForm.addEventListener('submit', queryOnSubmit);
 async function queryOnLoadMore(event) {
   try {
     const data = await searchImages(api.currentQuery);
+
     displayImages(data.hits);
+
     api.currentPage += 1;
     api.currentArrey = data.hits.length;
     api.totalLoaded += data.hits.length;
@@ -100,7 +102,9 @@ async function queryOnScroll() {
 
   if (api.currentArrey < api.perPage || api.totalLoaded >= api.totalHits) {
     return;
-  } else if (scrollTop + clientHeight >= scrollHeight - 5) {
+  }
+
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
     try {
       const data = await searchImages(api.currentQuery);
 
